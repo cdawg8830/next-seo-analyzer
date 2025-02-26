@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Next.js Performance Analyzer</title>
+  <style>
+    body {
+      width: 400px;
+      padding: 16px;
+      margin: 0;
+      font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu;
+      background: #000;
+      color: #fff;
+    }
+
+    .container {
+      border-radius: 8px;
+      background: #111;
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 18px;
+      margin: 0 0 16px 0;
+      color: #fff;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status.loading {
+      background: #2d2d2d;
+    }
+
+    .status.success {
+      background: #143a24;
+    }
+
+    .status.error {
+      background: #3a1414;
+    }
+
+    .section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #2d2d2d;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #888;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dev-time {
+      font-size: 12px;
+      color: #ff6b6b;
+      font-weight: bold;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #2d2d2d;
+      font-size: 14px;
+    }
+
+    .metric:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      color: #888;
+    }
+
+    .value {
+      color: #fff;
+    }
+
+    .value.yes {
+      color: #4dff4d;
+    }
+
+    .value.no {
+      color: #888;
+    }
+
+    .value.warning {
+      color: #ffd700;
+    }
+
+    .issues-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .issue-item {
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      background: #1a1a1a;
+      border-radius: 4px;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .issue-item.technical {
+      border-left: 3px solid #4dff4d;
+    }
+
+    .issue-item.marketing {
+      border-left: 3px solid #ffd700;
+    }
+
+    .issue-item.technical.critical {
+      border-left: 3px solid #ff4444;
+      background: rgba(255, 68, 68, 0.1);
+    }
+
+    .issue-item.technical.high {
+      border-left: 3px solid #ffa726;
+      background: rgba(255, 167, 38, 0.1);
+    }
+
+    .issue-item.technical.medium {
+      border-left: 3px solid #4dff4d;
+      background: rgba(77, 255, 77, 0.05);
+    }
+
+    .issue-impact {
+      font-size: 12px;
+      color: #ff6b6b;
+    }
+
+    .suggestion-note {
+      font-size: 12px;
+      color: #4dff4d;
+      margin-top: 4px;
+    }
+
+    .affected-components {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .marketing-section {
+      opacity: 0.6;
+    }
+
+    .technical-warning {
+      background: rgba(255, 68, 68, 0.1);
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #ff4444;
+      line-height: 1.4;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ffffff3d;
+      border-top: 2px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .cta-button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 24px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: background-color 0.2s ease;
+    }
+
+    .cta-button:hover {
+      background: #388E3C;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .metric-score {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .score-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .score-good {
+      background: #0cce6b;
+      color: #000;
+    }
+
+    .score-average {
+      background: #ffa400;
+      color: #000;
+    }
+
+    .score-poor {
+      background: #ff4e42;
+      color: #fff;
+    }
+
+    .recommendation {
+      background: #1a1a1a;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .recommendation-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .recommendation-title {
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .recommendation-impact {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .impact-high {
+      background: #ff4e42;
+      color: #fff;
+    }
+
+    .impact-medium {
+      background: #ffa400;
+      color: #000;
+    }
+
+    .recommendation-metric {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .recommendation-implementation {
+      font-size: 13px;
+      color: #4dff4d;
+      background: rgba(77, 255, 77, 0.1);
+      padding: 8px;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+
+    .loading-container {
+      margin-top: 8px;
+      display: none;
+    }
+
+    .loading-bar {
+      width: 100%;
+      height: 4px;
+      background: #2d2d2d;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loading-progress {
+      width: 0%;
+      height: 100%;
+      background: #0070f3;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    .loading-text {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+      text-align: center;
+    }
+
+    .recommendation.marketing {
+      border-left: 3px solid #ffd700;
+      background: rgba(255, 215, 0, 0.1);
+    }
+
+    .recommendation.technical {
+      border-left: 3px solid #4dff4d;
+      background: rgba(77, 255, 77, 0.05);
+    }
+
+    .marketing-section {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #2d2d2d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Next.js Performance Analyzer</h1>
+    <div id="status" class="status loading">
+      <div class="spinner"></div>
+      Analyzing page...
+    </div>
+
+    <div id="loading" class="loading-container">
+      <div class="loading-bar">
+        <div id="progress" class="loading-progress"></div>
+      </div>
+      <div id="loading-text" class="loading-text">Collecting metrics...</div>
+    </div>
+
+    <div id="metrics" style="display: none;">
+      <div class="section">
+        <div class="section-title">Core Web Vitals</div>
+        
+        <div class="metric">
+          <div class="metric-score">
+            <div id="lcp-score" class="score-circle">-</div>
+            <div>
+              <div class="label">Largest Contentful Paint</div>
+              <div id="lcp-value" class="value">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-score">
+            <div id="fid-score" class="score-circle">-</div>
+            <div>
+              <div class="label">First Input Delay</div>
+              <div id="fid-value" class="value">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-score">
+            <div id="cls-score" class="score-circle">-</div>
+            <div>
+              <div class="label">Cumulative Layout Shift</div>
+              <div id="cls-value" class="value">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Performance Score</div>
+        <div class="metric">
+          <div class="metric-score">
+            <div id="performance-score" class="score-circle">-</div>
+            <div>
+              <div class="label">Overall Performance</div>
+              <div id="performance-value" class="value">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Next.js Optimizations</div>
+        <div id="recommendations">
+          <!-- Recommendations will be inserted here -->
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Marketing Recommendations</div>
+        <div id="marketing-recommendations">
+          <!-- Marketing recommendations will be inserted here -->
+        </div>
+      </div>
+
+      <a href="#" id="cta-button" class="cta-button" target="_blank">
+        Free the Devs - Enable Marketing Changes
+      </a>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html> 

@@ -1,0 +1,15 @@
+{
+  "name": "next-seo-analyzer",
+  "version": "1.0.0",
+  "description": "A Chrome extension to analyze SEO metrics for Next.js websites",
+  "main": "index.js",
+  "scripts": {
+    "generate-icons": "node icons/generate_icons.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jimp": "^0.22.10"
+  }
+}

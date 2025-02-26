@@ -1,0 +1,44 @@
+body {
+  width: 400px;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.error {
+  color: #dc2626;
+  text-align: center;
+  padding: 20px;
+}
+
+.analysis-results {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.features ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.features li {
+  padding: 4px 0;
+} 
