@@ -4,9 +4,16 @@
   "description": "A Chrome extension to analyze SEO metrics for Next.js websites",
   "main": "index.js",
   "scripts": {
-    "generate-icons": "node icons/generate_icons.js"
+    "generate-icons": "node icons/generate_icons.js",
+    "package": "zip -r next-seo-analyzer.zip . -x '*.git*' 'node_modules/*' 'store-assets/*' '*.zip' 'package-lock.json'"
   },
-  "keywords": [],
+  "keywords": [
+    "nextjs",
+    "seo",
+    "performance",
+    "chrome-extension",
+    "web-vitals"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
